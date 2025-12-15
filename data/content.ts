@@ -16,7 +16,7 @@ export const APP_CONFIG = {
 export const SECTIONS = {
   hero: {
     tagline: "Enterprise Architecture • 2025",
-    title: "INT Inc.",
+    title: "AlphaQubit",
     subtitle: "Complete Platform Stack",
     description: "A comprehensive, federated architecture optimizing 50+ enterprise-grade platforms for B2B professional services operations."
   },
@@ -40,7 +40,7 @@ export const SECTIONS = {
   },
   investment: {
     title: "Strategic Investment",
-    description: "Investing $6k-$13k per employee annually places INT Inc. squarely within industry benchmarks for high-performance professional services firms."
+    description: "Investing $6k-$13k per employee annually places AlphaQubit squarely within industry benchmarks for high-performance professional services firms."
   },
   roadmap: {
     id: "impact",

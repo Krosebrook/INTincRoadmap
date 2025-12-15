@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Component, useRef, useState, ErrorInfo } from 'react';
+import React, { useRef, useState, ErrorInfo } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, Variants } from 'framer-motion';
 import { BaseProps, TooltipProps, SectionProps, AuthorCardProps } from '../../types';
 
@@ -18,11 +18,8 @@ interface ErrorBoundaryState {
   hasError: boolean;
 }
 
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false };
-  }
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  state: ErrorBoundaryState = { hasError: false };
 
   static getDerivedStateFromError(_: Error): ErrorBoundaryState {
     return { hasError: true };
