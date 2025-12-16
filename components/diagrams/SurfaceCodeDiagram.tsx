@@ -19,6 +19,27 @@ const calculateHubCoords = (index: number, total: number, radius: number, center
   };
 };
 
+// Data Particle Component
+const DataParticle: React.FC<{ from: {x: number, y: number}; to: {x: number, y: number}; delay?: number }> = ({ from, to, delay = 0 }) => (
+    <motion.circle
+        r={3}
+        fill="#C5A059"
+        filter="url(#glow)"
+        initial={{ cx: from.x, cy: from.y, opacity: 0 }}
+        animate={{
+            cx: [from.x, to.x],
+            cy: [from.y, to.y],
+            opacity: [0, 1, 1, 0]
+        }}
+        transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: delay
+        }}
+    />
+);
+
 export const HubArchitectureDiagram: React.FC = () => {
   const [activeHub, setActiveHub] = useState<string | null>(null);
   
@@ -119,18 +140,12 @@ export const HubArchitectureDiagram: React.FC = () => {
                                 />
                             )}
 
-                            {/* Data Particle - Only shows when specific source is active */}
+                            {/* Data Particles - Only show when specific source is active */}
                             {isSource && (
-                                <circle r="4" fill="#C5A059" filter="url(#glow)">
-                                    <animateMotion 
-                                        dur="1.5s" 
-                                        repeatCount="indefinite"
-                                        path={`M${source.x},${source.y} L${target.x},${target.y}`}
-                                        keyPoints="0;1"
-                                        keyTimes="0;1"
-                                        calcMode="linear"
-                                    />
-                                </circle>
+                                <>
+                                    <DataParticle from={source} to={target} delay={0} />
+                                    <DataParticle from={source} to={target} delay={0.75} />
+                                </>
                             )}
                         </g>
                     );
