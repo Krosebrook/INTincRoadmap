@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useRef, useState, ReactNode } from 'react';
+import React, { useRef, useState, ReactNode, ErrorInfo } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, Variants } from 'framer-motion';
 import { BaseProps, TooltipProps, SectionProps, AuthorCardProps } from '../../types';
 
@@ -24,15 +24,15 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(_: Error): ErrorBoundaryState {
+  public static getDerivedStateFromError(_: Error): ErrorBoundaryState {
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
   }
 
-  render() {
+  public render() {
     if (this.state.hasError) {
       return this.props.fallback || (
         <div className="p-8 text-center text-red-500 bg-red-50 rounded-lg border border-red-200">

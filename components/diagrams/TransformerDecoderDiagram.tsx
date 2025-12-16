@@ -80,8 +80,7 @@ export const IntegrationLayerDiagram: React.FC = () => {
                 <animateMotion 
                     dur="2s" 
                     repeatCount="1"
-                    path="M150,150 L450,150" // Approximate coords, handled via percentages usually but tricky in pure SVG inside React without measuring. 
-                    // Fallback to simpler CSS animation or just reliance on the 'token' layoutId
+                    path="M150,150 L450,150" // Approximate coords
                 />
              </motion.circle>
         )}
@@ -111,9 +110,9 @@ export const IntegrationLayerDiagram: React.FC = () => {
       <div className="grid w-full h-auto grid-cols-1 gap-8 md:grid-cols-3 md:h-80 relative z-10 px-4">
         
         {/* 1. Front of House */}
-        <Tooltip content="Primary engagement layer. Sources of truth for customer data (CRM) and market signals.">
+        <Tooltip className="h-full w-full" content="Primary engagement layer. Sources of truth for customer data (CRM) and market signals.">
             <motion.div 
-                className="relative flex flex-col justify-between h-full p-6 overflow-hidden bg-white border rounded-2xl dark:bg-stone-900 border-stone-200 dark:border-stone-700 shadow-sm z-20"
+                className="relative flex flex-col justify-between h-full w-full p-6 overflow-hidden bg-white border rounded-2xl dark:bg-stone-900 border-stone-200 dark:border-stone-700 shadow-sm z-20"
                 animate={{
                     borderColor: flowStep === 0 ? "#3b82f6" : "",
                     boxShadow: flowStep === 0 ? "0 10px 30px -10px rgba(59, 130, 246, 0.2)" : "none"
@@ -153,9 +152,9 @@ export const IntegrationLayerDiagram: React.FC = () => {
         </Tooltip>
 
         {/* 2. Integration Layer (Middle) */}
-        <Tooltip content="The connectivity fabric. Normalizes data schemas, handles API rate limits, and routes payloads between hubs via iPaaS.">
+        <Tooltip className="h-full w-full" content="The connectivity fabric. Normalizes data schemas, handles API rate limits, and routes payloads between hubs via iPaaS.">
             <motion.div 
-                className="relative flex flex-col justify-between h-full p-6 border rounded-2xl bg-stone-100/50 dark:bg-stone-950/50 border-stone-300 dark:border-stone-700 z-10"
+                className="relative flex flex-col justify-between h-full w-full p-6 border rounded-2xl bg-stone-100/50 dark:bg-stone-950/50 border-stone-300 dark:border-stone-700 z-10"
                 animate={{
                     borderColor: flowStep === 1 ? "#C5A059" : "",
                     backgroundColor: flowStep === 1 ? "rgba(197, 160, 89, 0.05)" : "transparent"
@@ -195,9 +194,9 @@ export const IntegrationLayerDiagram: React.FC = () => {
         </Tooltip>
 
         {/* 3. Back of House */}
-        <Tooltip content="Systems of Record for finance, HR, and operations. Receives clean, validated data for execution and compliance.">
+        <Tooltip className="h-full w-full" content="Systems of Record for finance, HR, and operations. Receives clean, validated data for execution and compliance.">
             <motion.div 
-                className="relative flex flex-col justify-between h-full p-6 overflow-hidden bg-white border rounded-2xl dark:bg-stone-900 border-stone-200 dark:border-stone-700 shadow-sm z-20"
+                className="relative flex flex-col justify-between h-full w-full p-6 overflow-hidden bg-white border rounded-2xl dark:bg-stone-900 border-stone-200 dark:border-stone-700 shadow-sm z-20"
                 animate={{
                     borderColor: flowStep === 2 ? "#10b981" : "",
                     boxShadow: flowStep === 2 ? "0 10px 30px -10px rgba(16, 185, 129, 0.2)" : "none"
