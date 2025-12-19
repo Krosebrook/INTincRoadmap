@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useScroll, useTransform } from 'framer-motion';
 
 // Layout & UI
@@ -21,62 +21,54 @@ import { ContentService } from './services/contentService';
 /**
  * App Component
  * 
- * The primary entry point of the AlphaQubit Platform Architecture dashboard.
- * Orchestrates global states (theme, scroll), data retrieval, and the high-level
- * layout structure.
+ * Central orchestrator for the AlphaQubit platform dashboard.
  */
 const App: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
 
-  // Optimized Scroll Event Handling for header transitions
+  // Scroll visibility management
   useEffect(() => {
-    let ticking = false;
-    const updateScrollState = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 80);
-          ticking = false;
-        });
-        ticking = true;
-      }
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
     };
-    window.addEventListener('scroll', updateScrollState, { passive: true });
-    return () => window.removeEventListener('scroll', updateScrollState);
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Hero Scroll Motion values
+  // Motion orchestration
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroProgress } = useScroll({ 
     target: heroRef, 
     offset: ["start start", "end start"] 
   });
   
-  const heroY = useTransform(heroProgress, [0, 1], ["0%", "40%"]);
-  const heroOpacity = useTransform(heroProgress, [0, 0.7], [1, 0]);
+  const heroY = useTransform(heroProgress, [0, 1], ["0%", "30%"]);
+  const heroOpacity = useTransform(heroProgress, [0, 0.8], [1, 0]);
 
-  /** Smooth scroll utility for internal navigation */
   const scrollToSection = useCallback((id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     setIsMenuOpen(false);
     const target = document.getElementById(id);
     if (target) {
-      const offset = 100;
-      const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+      const top = target.getBoundingClientRect().top + window.pageYOffset - 90;
       window.scrollTo({ top, behavior: "smooth" });
     }
   }, []);
 
-  // Fetch hierarchical content via ContentService
-  const heroContent = ContentService.getSection('hero');
-  const introContent = ContentService.getSection('introduction');
-  const archContent = ContentService.getSection('infrastructure');
-  const integrationContent = ContentService.getSection('integration');
-  const investmentContent = ContentService.getSection('investment');
-  const roadmapContent = ContentService.getSection('roadmap');
-  const governanceContent = ContentService.getSection('governance');
-  const governanceTeam = ContentService.getGovernanceTeam();
+  // Memoized content retrieval
+  const sections = useMemo(() => ({
+    hero: ContentService.getSection('hero'),
+    intro: ContentService.getSection('introduction'),
+    arch: ContentService.getSection('infrastructure'),
+    integ: ContentService.getSection('integration'),
+    invest: ContentService.getSection('investment'),
+    roadmap: ContentService.getSection('roadmap'),
+    governance: ContentService.getSection('governance'),
+    team: ContentService.getGovernanceTeam()
+  }), []);
 
   return (
     <ErrorBoundary>
@@ -96,19 +88,19 @@ const App: React.FC = () => {
             heroY={heroY}
             heroOpacity={heroOpacity}
             heroProgress={heroProgress}
-            content={heroContent}
-            nextSectionId={introContent.id}
+            content={sections.hero}
+            nextSectionId={sections.intro.id}
             scrollToSection={scrollToSection}
           />
 
           <MainContent 
-            introContent={introContent}
-            archContent={archContent}
-            integrationContent={integrationContent}
-            investmentContent={investmentContent}
-            roadmapContent={roadmapContent}
-            governanceContent={governanceContent}
-            governanceTeam={governanceTeam}
+            introContent={sections.intro}
+            archContent={sections.arch}
+            integrationContent={sections.integ}
+            investmentContent={sections.invest}
+            roadmapContent={sections.roadmap}
+            governanceContent={sections.governance}
+            governanceTeam={sections.team}
             scrollToSection={scrollToSection}
           />
         </main>

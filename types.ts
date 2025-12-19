@@ -88,6 +88,7 @@ export interface NavbarProps {
 export interface TooltipProps extends BaseProps {
   readonly content: React.ReactNode;
   readonly position?: 'top' | 'bottom' | 'left' | 'right';
+  readonly delay?: number;
 }
 
 /** Metadata for author/role cards */
