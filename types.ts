@@ -6,83 +6,100 @@
 
 import React from 'react';
 
-// --- System Architecture Types ---
+/** Domain identifiers for core enterprise hubs */
+export type HubId = 'CRM' | 'PSA' | 'ERP' | 'HRIS' | 'BI';
 
+/** Structure representing a major platform hub */
 export interface HubNode {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-  color: string;
-  desc: string;
-  connections: string[];
+  readonly id: HubId;
+  readonly label: string;
+  readonly icon: React.ElementType;
+  readonly color: string;
+  readonly desc: string;
+  readonly connections: readonly HubId[];
 }
 
+/** Represents a discrete data event flowing between systems */
 export interface DataFlowPacket {
-  label: string;
-  desc: string;
+  readonly id: string;
+  readonly label: string;
+  readonly desc: string;
 }
 
+/** Financial tier for architecture cost analysis */
 export interface CostTier {
-  id: number;
-  label: string;
-  cost: number;
-  color: string;
-  desc: string;
+  readonly id: number;
+  readonly label: string;
+  readonly cost: number;
+  readonly color: string;
+  readonly desc: string;
 }
 
-// --- Content Data Types ---
+/** Implementation phase for the 12-month roadmap */
+export interface RoadmapStep {
+  readonly quarter: string;
+  readonly title: string;
+  readonly desc: string;
+}
 
+/** Content schema for application sections */
 export interface SectionContent {
-  id: string;
-  title: string;
-  subtitle?: string;
-  description?: string;
-  tagline?: string;
+  readonly id: string;
+  readonly tagline: string;
+  readonly title: string;
+  readonly subtitle?: string;
+  readonly description?: string;
+  readonly description_p1?: string;
+  readonly description_p2?: string;
+  readonly steps?: readonly RoadmapStep[];
 }
 
+/** Governance role profile */
 export interface AuthorProfile {
-  name: string;
-  role: string;
+  readonly name: string;
+  readonly role: string;
 }
 
-// --- Component Prop Types ---
-
+/** Standard UI component props */
 export interface BaseProps {
-  className?: string;
-  children?: React.ReactNode;
-  style?: React.CSSProperties;
+  readonly className?: string;
+  readonly children?: React.ReactNode;
+  readonly style?: React.CSSProperties;
 }
 
+/** Specialized props for parallax sections */
 export interface SectionProps extends BaseProps {
-  id: string;
-  variant?: 'light' | 'dark';
-  ariaLabel?: string;
+  readonly id: string;
+  readonly variant?: 'light' | 'dark' | 'accent';
+  readonly ariaLabel?: string;
 }
 
+/** Navigation control properties */
 export interface NavbarProps {
-  scrolled: boolean;
-  isDarkMode: boolean;
-  toggleTheme: () => void;
-  menuOpen: boolean;
-  setMenuOpen: (open: boolean) => void;
-  scrollToSection: (id: string) => (e: React.MouseEvent) => void;
+  readonly scrolled: boolean;
+  readonly isDarkMode: boolean;
+  readonly toggleTheme: () => void;
+  readonly menuOpen: boolean;
+  readonly setMenuOpen: (open: boolean) => void;
+  readonly scrollToSection: (id: string) => (e: React.MouseEvent) => void;
 }
 
+/** Tooltip behavior configuration */
 export interface TooltipProps extends BaseProps {
-  content: React.ReactNode;
+  readonly content: React.ReactNode;
+  readonly position?: 'top' | 'bottom' | 'left' | 'right';
 }
 
+/** Metadata for author/role cards */
 export interface AuthorCardProps {
-  name: string;
-  role: string;
-  index: number;
+  readonly name: string;
+  readonly role: string;
+  readonly index: number;
 }
-
-// --- Theme Types ---
 
 export type Theme = 'light' | 'dark';
 
 export interface ThemeHook {
-  isDarkMode: boolean;
-  toggleTheme: () => void;
+  readonly isDarkMode: boolean;
+  readonly toggleTheme: () => void;
 }

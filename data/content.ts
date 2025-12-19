@@ -4,47 +4,57 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { HubNode, DataFlowPacket, CostTier, AuthorProfile } from '../types';
 import { Database, Users, Briefcase, TrendingUp } from 'lucide-react';
+import { 
+  HubNode, 
+  DataFlowPacket, 
+  CostTier, 
+  AuthorProfile, 
+  SectionContent 
+} from '../types';
 
 export const APP_CONFIG = {
   appName: "ALPHAQUBIT",
-  year: "2024",
+  year: "2025",
   paperLink: "https://doi.org/10.1038/s41586-024-08148-8"
-};
+} as const;
 
-export const SECTIONS = {
+export const SECTIONS: Record<string, SectionContent> = {
   hero: {
+    id: "hero",
     tagline: "Enterprise Architecture • 2025",
     title: "AlphaQubit",
     subtitle: "Complete Platform Stack",
     description: "A comprehensive, federated architecture optimizing 50+ enterprise-grade platforms for B2B professional services operations."
   },
-  intro: {
+  introduction: {
     id: "introduction",
     tagline: "Executive Summary",
     title: "Federated & Best-of-Breed",
     description_p1: "We have mapped a complete ecosystem of 50+ platforms designed to scale from 50 to 500 employees. The architecture avoids monolithic lock-in by utilizing specialized tools for each department.",
     description_p2: "This stack bridges the gap between Front-of-House revenue generation and Back-of-House operations, connected via a robust AI and API layer."
   },
-  architecture: {
-    id: "science",
-    tagline: "CORE INFRASTRUCTURE",
+  infrastructure: {
+    id: "infrastructure",
+    tagline: "Core Infrastructure",
     title: "The 4-Hub Strategy",
     description: "Rather than one system doing everything poorly, we leverage four specialized Hubs that act as 'Sources of Truth' for their respective domains: CRM, PSA, ERP, and HRIS."
   },
   integration: {
-    tagline: "DATA FLOW",
+    id: "integration",
+    tagline: "Data Flow",
     title: "Seamless Integration",
     description: "Data flows automatically from opportunity to project, and project to invoice. Native connectors and iPaaS (Zapier/Workato) eliminate manual data entry between front-office and back-office."
   },
   investment: {
+    id: "investment",
+    tagline: "Financial Efficiency",
     title: "Strategic Investment",
     description: "Investing $6k-$13k per employee annually places AlphaQubit squarely within industry benchmarks for high-performance professional services firms."
   },
   roadmap: {
-    id: "impact",
-    tagline: "IMPLEMENTATION",
+    id: "roadmap",
+    tagline: "Implementation",
     title: "12-Month Roadmap",
     steps: [
       { quarter: "Q1", title: "Core Hubs", desc: "Deploy CRM, PSA, ERP, and HRIS. Establish source of truth." },
@@ -54,8 +64,8 @@ export const SECTIONS = {
     ]
   },
   governance: {
-    id: "authors",
-    tagline: "GOVERNANCE",
+    id: "governance",
+    tagline: "Governance",
     title: "Platform Steering Committee",
     description: "Ensuring data quality, security, and adoption across the enterprise."
   }
@@ -97,9 +107,9 @@ export const HUBS_DATA: HubNode[] = [
 ];
 
 export const FLOW_PACKETS: DataFlowPacket[] = [
-  { label: "Deal Closed", desc: "CRM Opportunity → Project Created in PSA" },
-  { label: "Milestone", desc: "PSA Progress → Revenue Rec in ERP" },
-  { label: "Onboarding", desc: "HRIS Hire → IT Provisioning via SSO" }
+  { id: "deal-closed", label: "Deal Closed", desc: "CRM Opportunity → Project Created in PSA" },
+  { id: "milestone", label: "Milestone", desc: "PSA Progress → Revenue Rec in ERP" },
+  { id: "onboarding", label: "Onboarding", desc: "HRIS Hire → IT Provisioning via SSO" }
 ];
 
 export const COST_TIERS: CostTier[] = [
