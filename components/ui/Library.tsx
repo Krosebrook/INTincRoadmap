@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useRef, useState, ReactNode, ErrorInfo, useMemo, useEffect } from 'react';
+import React, { Component, useRef, useState, ReactNode, ErrorInfo, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, Variants } from 'framer-motion';
 import { BaseProps, TooltipProps, SectionProps, AuthorCardProps } from '../../types';
 
@@ -29,7 +29,7 @@ interface ErrorBoundaryState {
  * Production-grade Error Boundary 
  * Catches rendering crashes in 3D scenes or complex diagrams.
  */
-// Fix: Use React.Component directly to ensure this.props and this.setState are correctly recognized by the compiler.
+// Fix: Explicitly use React.Component to ensure props and setState are correctly inherited and recognized by the TypeScript compiler.
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   public state: ErrorBoundaryState = { hasError: false };
 

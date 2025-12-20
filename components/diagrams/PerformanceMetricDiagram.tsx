@@ -8,7 +8,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { Tooltip } from '../ui/Library';
 import { COST_TIERS } from '../../data/content';
-import { TrendingDown, ChevronRight } from 'lucide-react';
+import { TrendingDown, ChevronRight, BarChart3 } from 'lucide-react';
 
 /** 
  * High-performance spring-based count up for financial data.
@@ -33,7 +33,12 @@ const CountUp: React.FC<{ value: number }> = ({ value }) => {
  */
 export const CostAnalysisDiagram: React.FC = () => {
     const [activeTier, setActiveTier] = useState<number | null>(null);
-    const totalCost = useMemo(() => COST_TIERS.reduce((acc, curr) => acc + curr.cost, 0), []);
+    
+    // Audit Logic: Safe calculation for total cost to prevent division by zero edge cases
+    const totalCost = useMemo(() => {
+      const sum = COST_TIERS.reduce((acc, curr) => acc + curr.cost, 0);
+      return sum > 0 ? sum : 1; // Fallback to 1 to avoid NaN
+    }, []);
 
     // Donut SVG constants
     const RADIUS = 40;
@@ -189,7 +194,7 @@ export const CostAnalysisDiagram: React.FC = () => {
                                         animate={{
                                           strokeWidth: isSelected ? 24 : 14,
                                           scale: isSelected ? 1.05 : 1,
-                                          filter: isSelected ? 'brightness(1.2) drop-shadow(0 0 10px currentColor)' : 'none'
+                                          filter: isSelected ? 'brightness(1.2) drop-shadow(0 0 15px currentColor)' : 'none'
                                         }}
                                     />
                                 </Tooltip>

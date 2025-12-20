@@ -10,7 +10,7 @@ import { Info } from 'lucide-react';
 import { Tooltip } from '../ui/Library';
 import { HUBS_DATA } from '../../data/content';
 
-// Design system constants
+// Design system constants for SVG coordinate mapping
 const SVG_SIZE = 320;
 const CENTER = SVG_SIZE / 2;
 const HUB_RADIUS = 115;
@@ -19,6 +19,7 @@ const HUB_RADIUS = 115;
  * Optimized coordinate mapping for radial hub layout 
  */
 const getHubPos = (index: number) => {
+  // Distribute hubs evenly around the circle
   const angle = (index * 90) * (Math.PI / 180);
   return {
     x: CENTER + Math.cos(angle) * HUB_RADIUS,
@@ -28,38 +29,84 @@ const getHubPos = (index: number) => {
 
 /**
  * DataParticle Component
- * Animates a packet of data between two hubs with organic scaling and opacity.
+ * 
+ * Animates a high-fidelity "packet" of information between architectural nodes.
+ * Uses SVG filters for glow and Framer Motion for synchronized path traversal.
  */
 const DataParticle: React.FC<{ 
   from: {x: number, y: number}; 
   to: {x: number, y: number}; 
-  delay?: number 
-}> = ({ from, to, delay = 0 }) => (
-    <motion.circle
-        r={2.5}
-        fill="#C5A059"
-        filter="url(#p-glow)"
-        initial={{ cx: from.x, cy: from.y, opacity: 0, scale: 0 }}
-        animate={{
-            cx: [from.x, to.x],
-            cy: [from.y, to.y],
-            opacity: [0, 1, 1, 0],
-            scale: [0.5, 1.4, 0.8, 0.4]
-        }}
-        transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: delay
-        }}
-    />
-);
+  delay?: number;
+  color?: string;
+}> = ({ from, to, delay = 0, color = "#C5A059" }) => {
+  return (
+    <g>
+      {/* Primary Glow Layer */}
+      <motion.circle
+          r={2.5}
+          fill={color}
+          filter="url(#p-glow)"
+          initial={{ cx: from.x, cy: from.y, opacity: 0, scale: 0 }}
+          animate={{
+              cx: [from.x, to.x],
+              cy: [from.y, to.y],
+              opacity: [0, 1, 1, 0],
+              scale: [0.6, 1.2, 0.8, 0.4]
+          }}
+          transition={{
+              duration: 2.2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: delay
+          }}
+      />
+      {/* Leading Edge Sparkle - enhances perceived movement speed */}
+      <motion.circle
+          r={1}
+          fill="white"
+          initial={{ cx: from.x, cy: from.y, opacity: 0 }}
+          animate={{
+              cx: [from.x, to.x],
+              cy: [from.y, to.y],
+              opacity: [0, 0.9, 0.9, 0],
+          }}
+          transition={{
+              duration: 2.2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: delay
+          }}
+      />
+      {/* Animated Path Trail */}
+      <motion.line
+          x1={from.x} y1={from.y}
+          x2={to.x} y2={to.y}
+          stroke={color}
+          strokeWidth={1.2}
+          strokeOpacity={0.3}
+          strokeDasharray="4 160"
+          initial={{ strokeDashoffset: 0, opacity: 0 }}
+          animate={{ 
+              strokeDashoffset: [0, -164],
+              opacity: [0, 0.8, 0.8, 0]
+          }}
+          transition={{
+              duration: 2.2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: delay
+          }}
+      />
+    </g>
+  );
+};
 
 /**
  * HubArchitectureDiagram Component
  * 
  * Interactive SVG visualizing the federated hub strategy.
- * Features high-fidelity path animations and synchronized hub hover states.
+ * Features high-fidelity data particles that travel along active connecting lines
+ * when a user hovers over a hub, illustrating the flow of enterprise data.
  */
 export const HubArchitectureDiagram: React.FC = () => {
   const [activeHub, setActiveHub] = useState<string | null>(null);
@@ -77,18 +124,22 @@ export const HubArchitectureDiagram: React.FC = () => {
         <h3 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50">
           Federated Core
         </h3>
-        <Tooltip content="Utilizing specialized Best-of-Breed Hubs to ensure maximum operational integrity.">
-          <button className="text-stone-400 hover:text-nobel-gold transition-colors p-2" aria-label="Learn about core">
+        <Tooltip content="Utilizing specialized Best-of-Breed Hubs to ensure maximum operational integrity across departments.">
+          <button className="text-stone-400 hover:text-nobel-gold transition-colors p-2" aria-label="Architecture Information">
             <Info size={20} />
           </button>
         </Tooltip>
       </header>
       
       <div className="relative z-10 flex items-center justify-center w-80 h-80">
-         <svg className="absolute inset-0 w-full h-full overflow-visible pointer-events-none" aria-hidden="true">
+         <svg 
+           viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
+           className="absolute inset-0 w-full h-full overflow-visible pointer-events-none" 
+           aria-hidden="true"
+         >
             <defs>
-                <filter id="p-glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
+                <filter id="p-glow" x="-100%" y="-100%" width="300%" height="300%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
                 <linearGradient id="edgePulse" gradientUnits="userSpaceOnUse">
@@ -98,9 +149,9 @@ export const HubArchitectureDiagram: React.FC = () => {
                 </linearGradient>
             </defs>
             
-            {/* Background Orbits */}
+            {/* Ambient Background Orbits */}
             <motion.circle 
-              cx="50%" cy="50%" r="48%" fill="none" 
+              cx={CENTER} cy={CENTER} r={HUB_RADIUS * 1.2} fill="none" 
               stroke="#C5A059" strokeWidth="0.5" strokeDasharray="5 25" 
               className="opacity-10"
               animate={{ rotate: 360 }}
@@ -111,8 +162,11 @@ export const HubArchitectureDiagram: React.FC = () => {
                 const source = hubPositions[i];
                 return hub.connections.map(targetId => {
                     const targetIdx = HUBS_DATA.findIndex(h => h.id === targetId);
-                    if (targetIdx === -1) return null;
-                    const target = hubPositions[targetIdx];
+                    
+                    // Fallback to center if target is not a primary hub (e.g. BI)
+                    const target = targetIdx === -1 
+                      ? { x: CENTER, y: CENTER } 
+                      : hubPositions[targetIdx];
                     
                     const isActive = activeHub === hub.id || activeHub === targetId;
                     const isSource = activeHub === hub.id;
@@ -120,72 +174,74 @@ export const HubArchitectureDiagram: React.FC = () => {
 
                     return (
                         <g key={key}>
-                            {/* Static Background Connector */}
+                            {/* Static Background Path */}
                             <path 
                                 d={`M${source.x},${source.y} L${target.x},${target.y}`}
                                 fill="none"
                                 stroke="#d6d3d1"
-                                strokeWidth={1.5}
+                                strokeWidth={1.2}
                                 strokeOpacity={0.15}
-                                strokeDasharray="10 15"
+                                strokeDasharray="5 10"
                                 className="dark:stroke-stone-700 transition-opacity duration-500"
-                                style={{ opacity: isActive ? 0.3 : 1 }}
+                                style={{ opacity: isActive ? 0.2 : 1 }}
                             />
 
-                            {/* Active Energy Pulse Path */}
+                            {/* Active Energy Link */}
                             <AnimatePresence>
                                 {isActive && (
                                     <g>
-                                      {/* Primary Active Path */}
                                       <motion.path 
                                           d={`M${source.x},${source.y} L${target.x},${target.y}`}
                                           fill="none"
                                           stroke="#fbbf24"
-                                          strokeWidth={4}
+                                          strokeWidth={3}
                                           initial={{ pathLength: 0, opacity: 0 }}
-                                          animate={{ pathLength: 1, opacity: 1 }}
+                                          animate={{ pathLength: 1, opacity: 0.8 }}
                                           exit={{ opacity: 0 }}
                                           transition={{ duration: 0.8, ease: "easeInOut" }}
                                       />
                                       
-                                      {/* Atmospheric Halo Glow */}
-                                      <motion.path 
-                                          d={`M${source.x},${source.y} L${target.x},${target.y}`}
-                                          stroke="#fcd34d"
-                                          strokeWidth={14}
-                                          strokeOpacity={0.15}
-                                          fill="none"
-                                          filter="url(#p-glow)"
-                                          initial={{ opacity: 0 }}
-                                          animate={{ opacity: [0.1, 0.35, 0.1] }}
-                                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                      />
-                                      
-                                      {/* Moving Light Shimmer */}
                                       <motion.path 
                                           d={`M${source.x},${source.y} L${target.x},${target.y}`}
                                           stroke="url(#edgePulse)"
-                                          strokeWidth={6}
+                                          strokeWidth={5}
                                           fill="none"
                                           filter="url(#p-glow)"
                                           initial={{ pathLength: 0, opacity: 0 }}
                                           animate={{ 
                                               pathLength: [0, 1, 0], 
-                                              opacity: [0, 1, 0]
+                                              opacity: [0, 1, 0],
                                           }}
-                                          transition={{ duration: 2.8, repeat: Infinity, ease: "circInOut" }}
+                                          transition={{ 
+                                            duration: 2.8, 
+                                            repeat: Infinity, 
+                                            ease: "circInOut" 
+                                          }}
+                                          strokeDasharray="15 30"
                                       />
                                     </g>
                                 )}
                             </AnimatePresence>
 
-                            {/* Staggered Data Particles */}
+                            {/* Animated Data Stream - triggered on hub hover */}
                             {isSource && (
-                                <>
-                                    {[0, 0.7, 1.4, 2.1].map((d) => (
-                                        <DataParticle key={`${key}-p-${d}`} from={source} to={target} delay={d} />
+                                <g>
+                                    {[0, 0.55, 1.1, 1.65].map((d) => (
+                                        <DataParticle 
+                                          key={`${key}-particle-${d}`} 
+                                          from={source} 
+                                          to={target} 
+                                          delay={d} 
+                                          // Map colors from tailwind classes
+                                          color={
+                                            hub.color.includes('blue') ? '#3B82F6' : 
+                                            hub.color.includes('emerald') ? '#10B981' : 
+                                            hub.color.includes('purple') ? '#9333EA' : 
+                                            '#C5A059'
+                                          }
+                                        />
                                     ))}
-                                </>
+                                </g>
                             )}
                         </g>
                     );
@@ -193,25 +249,25 @@ export const HubArchitectureDiagram: React.FC = () => {
             })}
          </svg>
 
-         {/* Central Unified Core */}
+         {/* Central Unified Core Node */}
          <motion.div 
             animate={{ 
-                scale: activeHub ? 1.12 : 1,
+                scale: activeHub ? 1.08 : 1,
                 borderColor: activeHub ? "#C5A059" : "rgba(197, 160, 89, 0.15)",
                 boxShadow: activeHub 
-                  ? ["0 0 15px rgba(197,160,89,0)", "0 0 50px rgba(197,160,89,0.25)", "0 0 15px rgba(197,160,89,0)"]
-                  : "0 15px 40px -10px rgba(0,0,0,0.12)"
+                  ? ["0 0 20px rgba(197,160,89,0)", "0 0 60px rgba(197,160,89,0.3)", "0 0 20px rgba(197,160,89,0)"]
+                  : "0 10px 30px -10px rgba(0,0,0,0.1)"
             }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             className="absolute z-0 flex items-center justify-center w-36 h-36 border-2 border-double rounded-full bg-white dark:bg-stone-800 transition-colors"
          >
              <div className="text-center">
-                <span className="block text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-[0.4em] mb-1">Unified</span>
+                <span className="block text-[9px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-[0.4em] mb-1">Unified</span>
                 <span className="block text-sm font-serif font-bold text-stone-900 dark:text-stone-100 uppercase tracking-widest">Stack</span>
              </div>
          </motion.div>
 
-         {/* Dept Hub Nodes */}
+         {/* Departmental Hub UI Nodes */}
          {HUBS_DATA.map((hub, i) => {
              const { x, y } = hubPositions[i];
              const isHovered = activeHub === hub.id;
@@ -234,28 +290,28 @@ export const HubArchitectureDiagram: React.FC = () => {
                     <AnimatePresence>
                         {isHovered && (
                             <motion.div
-                                className="absolute -inset-14 rounded-full bg-nobel-gold/10 z-0"
+                                className="absolute -inset-16 rounded-full bg-nobel-gold/10 z-0"
                                 initial={{ scale: 0.5, opacity: 0 }}
-                                animate={{ scale: 2, opacity: 0 }}
-                                transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
+                                animate={{ scale: 2.2, opacity: 0 }}
+                                transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }}
                             />
                         )}
                     </AnimatePresence>
 
                     <Tooltip content={hub.desc} className="relative z-20">
                         <motion.div
-                            whileHover={{ y: -8, scale: 1.15 }}
+                            whileHover={{ y: -8, scale: 1.1 }}
                             animate={{ 
-                                opacity: isDimmed ? 0.3 : 1,
+                                opacity: isDimmed ? 0.35 : 1,
                                 boxShadow: isHovered 
-                                  ? "0 30px 60px -15px rgba(197, 160, 89, 0.4)" 
-                                  : "0 12px 25px -10px rgba(0, 0, 0, 0.15)"
+                                  ? "0 25px 50px -12px rgba(197, 160, 89, 0.4)" 
+                                  : "0 10px 20px -10px rgba(0, 0, 0, 0.15)"
                             }}
-                            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                            className={`w-16 h-16 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer text-white ${hub.color} border-2 border-white/40 dark:border-stone-700 transition-all duration-500`}
+                            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                            className={`w-16 h-16 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer text-white ${hub.color} border-2 border-white/30 dark:border-stone-700 transition-all duration-500`}
                         >
-                            <hub.icon size={26} className="mb-0.5" />
-                            <span className="text-[9px] font-bold tracking-tight opacity-90 uppercase">{hub.id}</span>
+                            <hub.icon size={24} className="mb-0.5" />
+                            <span className="text-[8px] font-bold tracking-tight opacity-90 uppercase">{hub.id}</span>
                         </motion.div>
                     </Tooltip>
                  </motion.div>
@@ -268,32 +324,32 @@ export const HubArchitectureDiagram: React.FC = () => {
              {activeHub ? (
                  <motion.div 
                     key={activeHub}
-                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 15, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -15, scale: 0.95 }}
+                    exit={{ opacity: 0, y: -15, scale: 0.98 }}
                     className="bg-stone-50 dark:bg-stone-800/80 p-8 rounded-[2.5rem] border border-stone-200 dark:border-stone-700 shadow-sm"
                  >
                     <span className="font-bold text-nobel-gold block mb-2 uppercase tracking-[0.4em] text-[10px]">
                       {HUBS_DATA.find(h => h.id === activeHub)?.label}
                     </span>
-                    <p className="text-base font-light text-stone-600 dark:text-stone-300 leading-relaxed italic">
+                    <p className="text-base font-light text-stone-600 dark:text-stone-300 leading-relaxed italic max-w-sm mx-auto">
                       {HUBS_DATA.find(h => h.id === activeHub)?.desc}
                     </p>
                  </motion.div>
              ) : (
                  <motion.div 
-                    key="default"
+                    key="default-instruction"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="flex flex-col items-center justify-center h-full gap-6"
                  >
-                    <div className="flex gap-3">
-                        <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 1.5 }} className="w-1.5 h-1.5 rounded-full bg-nobel-gold/50" />
-                        <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }} className="w-1.5 h-1.5 rounded-full bg-nobel-gold/50" />
-                        <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.4 }} className="w-1.5 h-1.5 rounded-full bg-nobel-gold/50" />
+                    <div className="flex gap-4">
+                        <motion.div animate={{ scale: [1, 1.4, 1] }} transition={{ repeat: Infinity, duration: 1.6 }} className="w-1.5 h-1.5 rounded-full bg-nobel-gold/40" />
+                        <motion.div animate={{ scale: [1, 1.4, 1] }} transition={{ repeat: Infinity, duration: 1.6, delay: 0.3 }} className="w-1.5 h-1.5 rounded-full bg-nobel-gold/40" />
+                        <motion.div animate={{ scale: [1, 1.4, 1] }} transition={{ repeat: Infinity, duration: 1.6, delay: 0.6 }} className="w-1.5 h-1.5 rounded-full bg-nobel-gold/40" />
                     </div>
-                    <span className="text-[10px] font-bold tracking-[0.5em] text-stone-400 uppercase">
-                      Select Hub to Audit Connections
+                    <span className="text-[10px] font-bold tracking-[0.4em] text-stone-400 uppercase">
+                      Hover Hubs to Visualize Data Streams
                     </span>
                  </motion.div>
              )}
