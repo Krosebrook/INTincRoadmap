@@ -6,10 +6,14 @@
 
 import React from 'react';
 
-/** Domain identifiers for core enterprise hubs */
-export type HubId = 'CRM' | 'PSA' | 'ERP' | 'HRIS' | 'BI';
+/** Domain identifiers for FlashFusion city districts */
+export type HubId = 'DEV' | 'DATA' | 'AI' | 'OPS' | 'GROWTH' | 'COMMERCE' | 'COLLAB';
 
-/** Structure representing a major platform hub */
+export interface SubPlatform {
+  readonly name: string;
+  readonly role: string;
+}
+
 export interface HubNode {
   readonly id: HubId;
   readonly label: string;
@@ -17,16 +21,15 @@ export interface HubNode {
   readonly color: string;
   readonly desc: string;
   readonly connections: readonly HubId[];
+  readonly subPlatforms: readonly SubPlatform[];
 }
 
-/** Represents a discrete data event flowing between systems */
 export interface DataFlowPacket {
   readonly id: string;
   readonly label: string;
   readonly desc: string;
 }
 
-/** Financial tier for architecture cost analysis */
 export interface CostTier {
   readonly id: number;
   readonly label: string;
@@ -35,14 +38,14 @@ export interface CostTier {
   readonly desc: string;
 }
 
-/** Implementation phase for the 12-month roadmap */
 export interface RoadmapStep {
   readonly quarter: string;
   readonly title: string;
   readonly desc: string;
+  readonly category: 'Intelligence' | 'Core' | 'Connectivity' | 'UX';
+  readonly complexity: 'Low' | 'Medium' | 'High';
 }
 
-/** Content schema for application sections */
 export interface SectionContent {
   readonly id: string;
   readonly tagline: string;
@@ -54,27 +57,23 @@ export interface SectionContent {
   readonly steps?: readonly RoadmapStep[];
 }
 
-/** Governance role profile */
 export interface AuthorProfile {
   readonly name: string;
   readonly role: string;
 }
 
-/** Standard UI component props */
 export interface BaseProps {
   readonly className?: string;
   readonly children?: React.ReactNode;
   readonly style?: React.CSSProperties;
 }
 
-/** Specialized props for parallax sections */
 export interface SectionProps extends BaseProps {
   readonly id: string;
   readonly variant?: 'light' | 'dark' | 'accent';
   readonly ariaLabel?: string;
 }
 
-/** Navigation control properties */
 export interface NavbarProps {
   readonly scrolled: boolean;
   readonly isDarkMode: boolean;
@@ -84,14 +83,12 @@ export interface NavbarProps {
   readonly scrollToSection: (id: string) => (e: React.MouseEvent) => void;
 }
 
-/** Tooltip behavior configuration */
 export interface TooltipProps extends BaseProps {
   readonly content: React.ReactNode;
   readonly position?: 'top' | 'bottom' | 'left' | 'right';
   readonly delay?: number;
 }
 
-/** Metadata for author/role cards */
 export interface AuthorCardProps {
   readonly name: string;
   readonly role: string;
@@ -103,4 +100,31 @@ export type Theme = 'light' | 'dark';
 export interface ThemeHook {
   readonly isDarkMode: boolean;
   readonly toggleTheme: () => void;
+}
+
+/** Simulation engine state for interactive architectural testing */
+export interface DistrictStatus {
+  id: HubId;
+  isActive: boolean;
+  load: number; // 0-100
+  health: number; // 0-100
+  gpuAcceleration?: {
+    isBoosted: boolean;
+    tflops: number;
+    vramUsed: number;
+  };
+}
+
+export interface CityState {
+  districts: Record<HubId, DistrictStatus>;
+  transitHub: 'n8n' | 'Zapier' | 'Manual';
+  simulationActive: boolean;
+}
+
+export interface CityContextType {
+  state: CityState;
+  toggleDistrict: (id: HubId) => void;
+  setTransitHub: (hub: 'n8n' | 'Zapier' | 'Manual') => void;
+  resetSimulation: () => void;
+  toggleGPUBooost: () => void;
 }

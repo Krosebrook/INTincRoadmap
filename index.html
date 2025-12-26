@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AlphaQubit: Quantum Error Decoding</title>
+    <title>FlashFusion: Federated Architecture</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +23,11 @@
                 gold: '#C5A059',
                 dark: '#1a1a1a',
                 cream: '#F9F8F4',
+              },
+              fusion: {
+                bolt: '#FF6B6B',
+                metro: '#FFD93D',
+                rapid: '#6BCF7F'
               }
             }
           }
@@ -37,10 +43,9 @@
         background-color: #F9F8F4;
         color: #1a1a1a;
       }
-      /* Dark mode overrides for body to prevent white flash */
       html.dark body {
-        background-color: #0c0a09; /* stone-950 */
-        color: #e7e5e4; /* stone-200 */
+        background-color: #0c0a09;
+        color: #e7e5e4;
       }
       @media print {
         nav, footer, button {
@@ -58,7 +63,8 @@
     "@react-three/drei": "https://aistudiocdn.com/@react-three/drei@^10.7.7",
     "three": "https://aistudiocdn.com/three@^0.181.1",
     "framer-motion": "https://aistudiocdn.com/framer-motion@^12.23.24",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.553.0"
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.553.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
   }
 }
 </script>

@@ -29,9 +29,11 @@ interface ErrorBoundaryState {
  * Production-grade Error Boundary 
  * Catches rendering crashes in 3D scenes or complex diagrams.
  */
-// Fix: Explicitly use React.Component to ensure props and setState are correctly inherited and recognized by the TypeScript compiler.
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  public state: ErrorBoundaryState = { hasError: false };
+// Fix: Use explicitly imported Component to ensure correct type inheritance for props and setState
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  public state: ErrorBoundaryState = {
+    hasError: false
+  };
 
   public static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error };
@@ -45,16 +47,17 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   public render() {
-    // Accessing this.props through React.Component base class
+    // Accessing props and state from the Component instance
     const { fallback, children } = this.props;
+    const { hasError } = this.state;
 
-    if (this.state.hasError) {
+    if (hasError) {
       return fallback || (
         <div className="flex flex-col items-center justify-center min-h-[400px] p-12 text-center bg-stone-50 dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800" role="alert">
           <h3 className="font-serif text-3xl mb-4 text-stone-900 dark:text-stone-100">System Integrity Fault</h3>
           <p className="text-stone-600 dark:text-stone-400 max-w-md">The platform visualization engine encountered an unexpected state. This usually occurs during complex 3D rendering cycles.</p>
           <button 
-            // Accessing this.setState through React.Component base class
+            // Fix: Correctly calling setState inherited from Component to clear error state
             onClick={() => this.setState({ hasError: false })}
             className="mt-8 px-8 py-3 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-nobel-gold transition-colors"
           >

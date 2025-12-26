@@ -6,8 +6,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, Layout, Shield, Database, FileJson, CheckCircle2, RefreshCw, Cpu, Activity } from 'lucide-react';
+import { Layers, Layout, Shield, Database, FileJson, CheckCircle2, RefreshCw, Cpu, Activity, Info } from 'lucide-react';
 import { FLOW_PACKETS } from '../../data/content';
+import { Tooltip } from '../ui/Library';
 
 /**
  * IntegrationLayerDiagram Component
@@ -80,11 +81,12 @@ export const IntegrationLayerDiagram: React.FC = () => {
 
       <div className="grid w-full grid-cols-1 gap-14 lg:grid-cols-3 relative z-10 min-h-[500px]">
         
-        {/* Step 1: Origin Station */}
+        {/* Step 1: Origin Station (Front-of-House) */}
         <StationCard 
           isActive={flowStep === 0}
-          title="Origin Point"
+          title="Front-of-House"
           tagline="Data Genesis"
+          tooltip="Role: Data Ingestion. Acts as the Genesis Layer, capturing initial user interactions and commerce events from CRM and Marketing hubs to start the federated data flow."
           icon={Layout}
           activeColor="bg-blue-600"
           accentColor="rgba(59, 130, 246, 0.25)"
@@ -111,11 +113,12 @@ export const IntegrationLayerDiagram: React.FC = () => {
           </AnimatePresence>
         </StationCard>
 
-        {/* Step 2: Translation Station */}
+        {/* Step 2: Translation Station (Integration Fabric) */}
         <StationCard 
           isActive={flowStep === 1}
-          title="Validation"
+          title="Integration Fabric"
           tagline="Logic Normalization"
+          tooltip="Role: Orchestration Hub. The city's central nervous system that normalizes disparate data schemas and routes packets through the n8n Metro backbone."
           icon={RefreshCw}
           activeColor="bg-nobel-gold"
           accentColor="rgba(197, 160, 89, 0.3)"
@@ -143,11 +146,12 @@ export const IntegrationLayerDiagram: React.FC = () => {
           </AnimatePresence>
         </StationCard>
 
-        {/* Step 3: Destination Station */}
+        {/* Step 3: Destination Station (Back-of-House) */}
         <StationCard 
           isActive={flowStep === 2}
-          title="Persistence"
+          title="Back-of-House"
           tagline="Canonical Sync"
+          tooltip="Role: Persistence & Audit. Finalizes validated records into enterprise systems for financial compliance, long-term storage, and analytical reporting."
           icon={Shield}
           activeColor="bg-emerald-600"
           accentColor="rgba(16, 185, 129, 0.25)"
@@ -228,41 +232,49 @@ const StationCard: React.FC<{
   isActive: boolean;
   title: string;
   tagline: string;
+  tooltip: string;
   icon: React.ElementType;
   activeColor: string;
   accentColor: string;
   iconAnimation?: any;
   children: React.ReactNode;
-}> = ({ isActive, title, tagline, icon: Icon, activeColor, accentColor, iconAnimation, children }) => (
-  <motion.div 
-      animate={{ 
-        scale: isActive ? 1.04 : 1,
-        boxShadow: isActive ? `0 40px 80px -20px ${accentColor}` : "none",
-        borderColor: isActive ? accentColor : "rgba(168, 162, 158, 0.1)"
-      }}
-      className="relative flex flex-col justify-between h-full p-14 bg-white dark:bg-stone-800/50 border-2 rounded-[4rem] transition-all duration-1000 overflow-hidden"
-  >
-      <div className="text-center mb-12">
+}> = ({ isActive, title, tagline, tooltip, icon: Icon, activeColor, accentColor, iconAnimation, children }) => (
+  <Tooltip content={tooltip} position="top" className="w-full h-full">
+    <motion.div 
+        animate={{ 
+          scale: isActive ? 1.04 : 1,
+          boxShadow: isActive ? `0 40px 80px -20px ${accentColor}` : "none",
+          borderColor: isActive ? accentColor : "rgba(168, 162, 158, 0.1)"
+        }}
+        className="relative flex flex-col justify-between h-full p-14 bg-white dark:bg-stone-800/50 border-2 rounded-[4rem] transition-all duration-1000 overflow-hidden cursor-help group"
+    >
+        <div className="text-center mb-12 group-hover:opacity-90 transition-opacity">
+            <motion.div 
+              animate={isActive ? (iconAnimation || { y: [0, -8, 0] }) : {}}
+              transition={isActive ? { repeat: Infinity, duration: 3.5, ease: "easeInOut" } : {}}
+              className={`inline-flex items-center justify-center w-20 h-20 mb-10 rounded-[2.2rem] transition-all duration-1000 ${isActive ? `${activeColor} text-white shadow-3xl scale-110 rotate-3` : 'bg-stone-100 dark:bg-stone-700 text-stone-400'}`}
+            >
+                <Icon size={38} />
+            </motion.div>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <h4 className="font-bold text-3xl text-stone-800 dark:text-stone-100 tracking-tight">{title}</h4>
+              <Info size={14} className="text-stone-300 dark:text-stone-600 group-hover:text-nobel-gold transition-colors" />
+            </div>
+            <p className="text-[11px] font-bold text-stone-400 uppercase tracking-[0.4em] mt-5 opacity-80">{tagline}</p>
+        </div>
+        
+        <div className="flex-grow flex items-center justify-center relative min-h-[180px]">
+            {children}
+        </div>
+        
+        {isActive && (
           <motion.div 
-            animate={isActive ? (iconAnimation || { y: [0, -8, 0] }) : {}}
-            transition={isActive ? { repeat: Infinity, duration: 3.5, ease: "easeInOut" } : {}}
-            className={`inline-flex items-center justify-center w-20 h-20 mb-10 rounded-[2.2rem] transition-all duration-1000 ${isActive ? `${activeColor} text-white shadow-3xl scale-110 rotate-3` : 'bg-stone-100 dark:bg-stone-700 text-stone-400'}`}
-          >
-              <Icon size={38} />
-          </motion.div>
-          <h4 className="font-bold text-3xl text-stone-800 dark:text-stone-100 tracking-tight">{title}</h4>
-          <p className="text-[11px] font-bold text-stone-400 uppercase tracking-[0.4em] mt-5 opacity-80">{tagline}</p>
-      </div>
-      <div className="flex-grow flex items-center justify-center relative min-h-[180px]">
-          {children}
-      </div>
-      {isActive && (
-        <motion.div 
-          className="absolute bottom-0 left-0 h-1.5 bg-current opacity-30"
-          initial={{ width: 0 }}
-          animate={{ width: '100%' }}
-          transition={{ duration: 3.5, ease: "linear" }}
-        />
-      )}
-  </motion.div>
+            className="absolute bottom-0 left-0 h-1.5 bg-current opacity-30"
+            initial={{ width: 0 }}
+            animate={{ width: '100%' }}
+            transition={{ duration: 3.5, ease: "linear" }}
+          />
+        )}
+    </motion.div>
+  </Tooltip>
 );

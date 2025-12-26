@@ -6,109 +6,25 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Info } from 'lucide-react';
+import { Map, ShieldAlert } from 'lucide-react';
 import { Tooltip } from '../ui/Library';
 import { HUBS_DATA } from '../../data/content';
+import { useCity } from '../../context/CityContext';
 
-// Design system constants for SVG coordinate mapping
-const SVG_SIZE = 320;
+const SVG_SIZE = 400;
 const CENTER = SVG_SIZE / 2;
-const HUB_RADIUS = 115;
+const HUB_RADIUS = 145;
 
-/** 
- * Optimized coordinate mapping for radial hub layout 
- */
 const getHubPos = (index: number) => {
-  // Distribute hubs evenly around the circle
-  const angle = (index * 90) * (Math.PI / 180);
+  const angle = (index * (360 / 7) - 90) * (Math.PI / 180);
   return {
     x: CENTER + Math.cos(angle) * HUB_RADIUS,
     y: CENTER + Math.sin(angle) * HUB_RADIUS
   };
 };
 
-/**
- * DataParticle Component
- * 
- * Animates a high-fidelity "packet" of information between architectural nodes.
- * Uses SVG filters for glow and Framer Motion for synchronized path traversal.
- */
-const DataParticle: React.FC<{ 
-  from: {x: number, y: number}; 
-  to: {x: number, y: number}; 
-  delay?: number;
-  color?: string;
-}> = ({ from, to, delay = 0, color = "#C5A059" }) => {
-  return (
-    <g>
-      {/* Primary Glow Layer */}
-      <motion.circle
-          r={2.5}
-          fill={color}
-          filter="url(#p-glow)"
-          initial={{ cx: from.x, cy: from.y, opacity: 0, scale: 0 }}
-          animate={{
-              cx: [from.x, to.x],
-              cy: [from.y, to.y],
-              opacity: [0, 1, 1, 0],
-              scale: [0.6, 1.2, 0.8, 0.4]
-          }}
-          transition={{
-              duration: 2.2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: delay
-          }}
-      />
-      {/* Leading Edge Sparkle - enhances perceived movement speed */}
-      <motion.circle
-          r={1}
-          fill="white"
-          initial={{ cx: from.x, cy: from.y, opacity: 0 }}
-          animate={{
-              cx: [from.x, to.x],
-              cy: [from.y, to.y],
-              opacity: [0, 0.9, 0.9, 0],
-          }}
-          transition={{
-              duration: 2.2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: delay
-          }}
-      />
-      {/* Animated Path Trail */}
-      <motion.line
-          x1={from.x} y1={from.y}
-          x2={to.x} y2={to.y}
-          stroke={color}
-          strokeWidth={1.2}
-          strokeOpacity={0.3}
-          strokeDasharray="4 160"
-          initial={{ strokeDashoffset: 0, opacity: 0 }}
-          animate={{ 
-              strokeDashoffset: [0, -164],
-              opacity: [0, 0.8, 0.8, 0]
-          }}
-          transition={{
-              duration: 2.2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: delay
-          }}
-      />
-    </g>
-  );
-};
-
-/**
- * HubArchitectureDiagram Component
- * 
- * Interactive SVG visualizing the federated hub strategy.
- * Features high-fidelity data particles that travel along active connecting lines
- * when a user hovers over a hub, illustrating the flow of enterprise data.
- */
 export const HubArchitectureDiagram: React.FC = () => {
+  const { state } = useCity();
   const [activeHub, setActiveHub] = useState<string | null>(null);
   
   const hubPositions = useMemo(() => 
@@ -118,200 +34,120 @@ export const HubArchitectureDiagram: React.FC = () => {
     setActiveHub(id);
   }, []);
 
+  const getThemeColor = (colorClass: string) => {
+    if (colorClass.includes('indigo')) return '#4F46E5';
+    if (colorClass.includes('blue')) return '#2563EB';
+    if (colorClass.includes('emerald')) return '#10B981';
+    if (colorClass.includes('rose')) return '#E11D48';
+    if (colorClass.includes('amber')) return '#D97706';
+    if (colorClass.includes('violet')) return '#7C3AED';
+    if (colorClass.includes('teal')) return '#0D9488';
+    return '#C5A059';
+  };
+
+  const currentHubData = useMemo(() => 
+    HUBS_DATA.find(h => h.id === activeHub), [activeHub]);
+
   return (
-    <div className="flex flex-col items-center p-12 bg-white dark:bg-stone-900 rounded-[3rem] shadow-2xl border border-stone-200 dark:border-stone-800 my-8 select-none transition-all duration-1000 relative overflow-visible w-full max-w-lg mx-auto group/diagram">
-      <header className="relative z-10 flex items-center gap-4 mb-12">
+    <div className="flex flex-col items-center p-8 bg-white dark:bg-stone-900 rounded-[3rem] shadow-3xl border border-stone-200 dark:border-stone-800 my-8 select-none transition-all duration-1000 relative overflow-visible w-full max-w-2xl mx-auto group/diagram">
+      <header className="relative z-10 flex items-center gap-4 mb-8">
         <h3 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50">
-          Federated Core
+          City Grid Topology
         </h3>
-        <Tooltip content="Utilizing specialized Best-of-Breed Hubs to ensure maximum operational integrity across departments.">
-          <button className="text-stone-400 hover:text-nobel-gold transition-colors p-2" aria-label="Architecture Information">
-            <Info size={20} />
+        <Tooltip content="Live architectural mesh synchronized with the Simulation Engine.">
+          <button className="text-stone-400 hover:text-fusion-bolt transition-colors p-2">
+            <Map size={20} />
           </button>
         </Tooltip>
       </header>
       
-      <div className="relative z-10 flex items-center justify-center w-80 h-80">
-         <svg 
-           viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-           className="absolute inset-0 w-full h-full overflow-visible pointer-events-none" 
-           aria-hidden="true"
-         >
-            <defs>
-                <filter id="p-glow" x="-100%" y="-100%" width="300%" height="300%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-                <linearGradient id="edgePulse" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#C5A059" stopOpacity="0" />
-                    <stop offset="50%" stopColor="#facc15" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#C5A059" stopOpacity="0" />
-                </linearGradient>
-            </defs>
-            
-            {/* Ambient Background Orbits */}
-            <motion.circle 
-              cx={CENTER} cy={CENTER} r={HUB_RADIUS * 1.2} fill="none" 
-              stroke="#C5A059" strokeWidth="0.5" strokeDasharray="5 25" 
-              className="opacity-10"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 180, repeat: Infinity, ease: "linear" }}
-            />
-            
+      <div className="relative z-10 flex items-center justify-center w-[360px] h-[360px]">
+         <svg viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`} className="absolute inset-0 w-full h-full overflow-visible pointer-events-none">
             {HUBS_DATA.map((hub, i) => {
                 const source = hubPositions[i];
+                const hubColor = getThemeColor(hub.color);
+                const sourceActive = state.districts[hub.id].isActive;
+                
                 return hub.connections.map(targetId => {
                     const targetIdx = HUBS_DATA.findIndex(h => h.id === targetId);
-                    
-                    // Fallback to center if target is not a primary hub (e.g. BI)
-                    const target = targetIdx === -1 
-                      ? { x: CENTER, y: CENTER } 
-                      : hubPositions[targetIdx];
-                    
-                    const isActive = activeHub === hub.id || activeHub === targetId;
-                    const isSource = activeHub === hub.id;
-                    const key = `${hub.id}-${targetId}`;
+                    if (targetIdx === -1) return null;
+                    const target = hubPositions[targetIdx];
+                    const targetActive = state.districts[targetId].isActive;
+                    const isParticipating = activeHub === hub.id || activeHub === targetId;
 
                     return (
-                        <g key={key}>
-                            {/* Static Background Path */}
+                        <g key={`${hub.id}-${targetId}`}>
                             <path 
                                 d={`M${source.x},${source.y} L${target.x},${target.y}`}
                                 fill="none"
-                                stroke="#d6d3d1"
-                                strokeWidth={1.2}
-                                strokeOpacity={0.15}
-                                strokeDasharray="5 10"
-                                className="dark:stroke-stone-700 transition-opacity duration-500"
-                                style={{ opacity: isActive ? 0.2 : 1 }}
+                                stroke={sourceActive && targetActive ? "#d6d3d1" : "#ef4444"}
+                                strokeWidth={1}
+                                strokeOpacity={activeHub ? 0.05 : 0.15}
+                                strokeDasharray={sourceActive && targetActive ? "0" : "5,5"}
+                                className="dark:stroke-stone-700 transition-all duration-700"
                             />
-
-                            {/* Active Energy Link */}
                             <AnimatePresence>
-                                {isActive && (
-                                    <g>
-                                      <motion.path 
-                                          d={`M${source.x},${source.y} L${target.x},${target.y}`}
-                                          fill="none"
-                                          stroke="#fbbf24"
-                                          strokeWidth={3}
-                                          initial={{ pathLength: 0, opacity: 0 }}
-                                          animate={{ pathLength: 1, opacity: 0.8 }}
-                                          exit={{ opacity: 0 }}
-                                          transition={{ duration: 0.8, ease: "easeInOut" }}
-                                      />
-                                      
-                                      <motion.path 
-                                          d={`M${source.x},${source.y} L${target.x},${target.y}`}
-                                          stroke="url(#edgePulse)"
-                                          strokeWidth={5}
-                                          fill="none"
-                                          filter="url(#p-glow)"
-                                          initial={{ pathLength: 0, opacity: 0 }}
-                                          animate={{ 
-                                              pathLength: [0, 1, 0], 
-                                              opacity: [0, 1, 0],
-                                          }}
-                                          transition={{ 
-                                            duration: 2.8, 
-                                            repeat: Infinity, 
-                                            ease: "circInOut" 
-                                          }}
-                                          strokeDasharray="15 30"
-                                      />
-                                    </g>
+                                {isParticipating && sourceActive && targetActive && (
+                                    <motion.path 
+                                        d={`M${source.x},${source.y} L${target.x},${target.y}`}
+                                        fill="none"
+                                        stroke={hubColor}
+                                        strokeWidth={2}
+                                        initial={{ pathLength: 0, opacity: 0 }}
+                                        animate={{ pathLength: 1, opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.8 }}
+                                    />
                                 )}
                             </AnimatePresence>
-
-                            {/* Animated Data Stream - triggered on hub hover */}
-                            {isSource && (
-                                <g>
-                                    {[0, 0.55, 1.1, 1.65].map((d) => (
-                                        <DataParticle 
-                                          key={`${key}-particle-${d}`} 
-                                          from={source} 
-                                          to={target} 
-                                          delay={d} 
-                                          // Map colors from tailwind classes
-                                          color={
-                                            hub.color.includes('blue') ? '#3B82F6' : 
-                                            hub.color.includes('emerald') ? '#10B981' : 
-                                            hub.color.includes('purple') ? '#9333EA' : 
-                                            '#C5A059'
-                                          }
-                                        />
-                                    ))}
-                                </g>
-                            )}
                         </g>
                     );
                 });
             })}
          </svg>
 
-         {/* Central Unified Core Node */}
          <motion.div 
-            animate={{ 
-                scale: activeHub ? 1.08 : 1,
-                borderColor: activeHub ? "#C5A059" : "rgba(197, 160, 89, 0.15)",
-                boxShadow: activeHub 
-                  ? ["0 0 20px rgba(197,160,89,0)", "0 0 60px rgba(197,160,89,0.3)", "0 0 20px rgba(197,160,89,0)"]
-                  : "0 10px 30px -10px rgba(0,0,0,0.1)"
-            }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute z-0 flex items-center justify-center w-36 h-36 border-2 border-double rounded-full bg-white dark:bg-stone-800 transition-colors"
+            animate={{ scale: state.simulationActive ? [1, 1.05, 1] : 1 }}
+            className={`absolute z-0 flex items-center justify-center w-32 h-32 border-4 border-dotted rounded-full bg-white dark:bg-stone-800 transition-colors duration-700 ${state.simulationActive ? 'border-fusion-bolt/40' : 'border-fusion-metro/20'}`}
          >
              <div className="text-center">
-                <span className="block text-[9px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-[0.4em] mb-1">Unified</span>
-                <span className="block text-sm font-serif font-bold text-stone-900 dark:text-stone-100 uppercase tracking-widest">Stack</span>
+                <span className="block text-[8px] font-bold text-stone-400 uppercase tracking-widest mb-1">Transit</span>
+                <span className="block text-sm font-serif font-bold text-fusion-bolt uppercase">{state.transitHub}</span>
              </div>
          </motion.div>
 
-         {/* Departmental Hub UI Nodes */}
          {HUBS_DATA.map((hub, i) => {
              const { x, y } = hubPositions[i];
              const isHovered = activeHub === hub.id;
+             const status = state.districts[hub.id];
              const isDimmed = activeHub && !isHovered;
+             const hubColor = getThemeColor(hub.color);
 
              return (
                  <motion.div 
                     key={hub.id} 
                     className="absolute top-1/2 left-1/2"
                     initial={{ x: x - CENTER, y: y - CENTER }}
-                    animate={{ 
-                      x: x - CENTER, 
-                      y: y - CENTER,
-                      scale: isHovered ? 1.25 : 1,
-                    }} 
+                    animate={{ x: x - CENTER, y: y - CENTER, scale: isHovered ? 1.25 : 1 }} 
                     onMouseEnter={() => handleInteraction(hub.id)}
                     onMouseLeave={() => handleInteraction(null)}
                     style={{ zIndex: isHovered ? 50 : 20 }}
                  >
-                    <AnimatePresence>
-                        {isHovered && (
-                            <motion.div
-                                className="absolute -inset-16 rounded-full bg-nobel-gold/10 z-0"
-                                initial={{ scale: 0.5, opacity: 0 }}
-                                animate={{ scale: 2.2, opacity: 0 }}
-                                transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }}
-                            />
-                        )}
-                    </AnimatePresence>
-
-                    <Tooltip content={hub.desc} className="relative z-20">
+                    <Tooltip content={`${hub.label}: ${status.isActive ? 'Online' : 'Fault'}`}>
                         <motion.div
-                            whileHover={{ y: -8, scale: 1.1 }}
                             animate={{ 
-                                opacity: isDimmed ? 0.35 : 1,
+                                opacity: isDimmed ? 0.3 : 1,
+                                filter: status.isActive ? 'none' : 'grayscale(0.8)',
                                 boxShadow: isHovered 
-                                  ? "0 25px 50px -12px rgba(197, 160, 89, 0.4)" 
-                                  : "0 10px 20px -10px rgba(0, 0, 0, 0.15)"
+                                  ? `0 20px 50px -10px ${status.isActive ? hubColor : '#ef4444'}AA` 
+                                  : "0 5px 15px -5px rgba(0, 0, 0, 0.1)"
                             }}
-                            transition={{ type: "spring", stiffness: 400, damping: 28 }}
-                            className={`w-16 h-16 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer text-white ${hub.color} border-2 border-white/30 dark:border-stone-700 transition-all duration-500`}
+                            className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center cursor-pointer text-white border-2 border-white/20 transition-all duration-300 ${
+                              status.isActive ? hub.color : 'bg-red-500'
+                            }`}
                         >
-                            <hub.icon size={24} className="mb-0.5" />
-                            <span className="text-[8px] font-bold tracking-tight opacity-90 uppercase">{hub.id}</span>
+                            {status.isActive ? <hub.icon size={20} className="mb-0.5" /> : <ShieldAlert size={20} />}
+                            <span className="text-[6px] font-bold tracking-widest opacity-80 uppercase">{hub.id}</span>
                         </motion.div>
                     </Tooltip>
                  </motion.div>
@@ -319,39 +155,56 @@ export const HubArchitectureDiagram: React.FC = () => {
          })}
       </div>
 
-      <div className="h-32 w-full mt-14 text-center" aria-live="polite">
+      <div className="h-40 w-full mt-12 text-center overflow-hidden">
         <AnimatePresence mode="wait">
-             {activeHub ? (
+             {activeHub && currentHubData ? (
                  <motion.div 
                     key={activeHub}
-                    initial={{ opacity: 0, y: 15, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -15, scale: 0.98 }}
-                    className="bg-stone-50 dark:bg-stone-800/80 p-8 rounded-[2.5rem] border border-stone-200 dark:border-stone-700 shadow-sm"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    className={`p-6 rounded-3xl border flex flex-col h-full transition-colors duration-500 ${
+                      state.districts[currentHubData.id].isActive 
+                        ? 'bg-stone-50 dark:bg-stone-800/50 border-stone-100 dark:border-stone-800' 
+                        : 'bg-red-500/10 border-red-500/20'
+                    }`}
                  >
-                    <span className="font-bold text-nobel-gold block mb-2 uppercase tracking-[0.4em] text-[10px]">
-                      {HUBS_DATA.find(h => h.id === activeHub)?.label}
-                    </span>
-                    <p className="text-base font-light text-stone-600 dark:text-stone-300 leading-relaxed italic max-w-sm mx-auto">
-                      {HUBS_DATA.find(h => h.id === activeHub)?.desc}
-                    </p>
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="text-left">
+                        <span className={`font-bold block uppercase tracking-widest text-[10px] ${state.districts[currentHubData.id].isActive ? 'text-fusion-bolt' : 'text-red-500'}`}>
+                          {state.districts[currentHubData.id].isActive ? 'District Active' : 'FAULT: Critical Failure'}
+                        </span>
+                        <h4 className="text-xl font-serif font-bold dark:text-white">{currentHubData.label}</h4>
+                      </div>
+                      <div className="flex -space-x-2">
+                        {currentHubData.subPlatforms.map((sp, idx) => (
+                           <div key={idx} className="w-6 h-6 rounded-full bg-white dark:bg-stone-900 border-2 border-stone-100 dark:border-stone-700 flex items-center justify-center text-[8px] font-bold text-stone-500">
+                             {sp.name.charAt(0)}
+                           </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-left mt-auto">
+                       {currentHubData.subPlatforms.map((sp, idx) => (
+                         <div key={idx} className="flex flex-col">
+                            <span className="text-[10px] font-bold text-stone-900 dark:text-stone-100">{sp.name}</span>
+                            <span className="text-[8px] text-stone-500 uppercase">{sp.role}</span>
+                         </div>
+                       ))}
+                    </div>
                  </motion.div>
              ) : (
-                 <motion.div 
-                    key="default-instruction"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex flex-col items-center justify-center h-full gap-6"
-                 >
-                    <div className="flex gap-4">
-                        <motion.div animate={{ scale: [1, 1.4, 1] }} transition={{ repeat: Infinity, duration: 1.6 }} className="w-1.5 h-1.5 rounded-full bg-nobel-gold/40" />
-                        <motion.div animate={{ scale: [1, 1.4, 1] }} transition={{ repeat: Infinity, duration: 1.6, delay: 0.3 }} className="w-1.5 h-1.5 rounded-full bg-nobel-gold/40" />
-                        <motion.div animate={{ scale: [1, 1.4, 1] }} transition={{ repeat: Infinity, duration: 1.6, delay: 0.6 }} className="w-1.5 h-1.5 rounded-full bg-nobel-gold/40" />
+                 <div className="flex flex-col items-center justify-center h-full text-stone-400">
+                    <div className="flex gap-2 mb-4">
+                        <div className="w-1.5 h-1.5 rounded-full bg-fusion-bolt animate-pulse" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-fusion-bolt animate-pulse delay-75" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-fusion-bolt animate-pulse delay-150" />
                     </div>
-                    <span className="text-[10px] font-bold tracking-[0.4em] text-stone-400 uppercase">
-                      Hover Hubs to Visualize Data Streams
+                    <span className="text-[10px] font-bold tracking-[0.3em] uppercase">
+                      Inspect District Topology
                     </span>
-                 </motion.div>
+                 </div>
              )}
         </AnimatePresence>
       </div>

@@ -4,127 +4,203 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Database, Users, Briefcase, TrendingUp } from 'lucide-react';
+import { 
+  Code, 
+  Database, 
+  Cpu, 
+  Settings, 
+  TrendingUp, 
+  ShoppingBag, 
+  MessageSquare 
+} from 'lucide-react';
 import { 
   HubNode, 
   DataFlowPacket, 
   CostTier, 
   AuthorProfile, 
-  SectionContent 
+  SectionContent,
+  RoadmapStep
 } from '../types';
 
 export const APP_CONFIG = {
-  appName: "ALPHAQUBIT",
+  appName: "FLASHFUSION",
   year: "2025",
   paperLink: "https://doi.org/10.1038/s41586-024-08148-8"
 } as const;
 
+export const ROADMAP_STEPS: readonly RoadmapStep[] = [
+  { quarter: "Q1-25", category: "Core", title: "Metro Backbone", desc: "n8n deployment as the central city transit hub for all data packets.", complexity: "High" },
+  { quarter: "Q1-25", category: "Connectivity", title: "RLS Audit", desc: "99.9% cost efficiency validation via Supabase Row-Level Security.", complexity: "Medium" },
+  { quarter: "Q2-25", category: "Intelligence", title: "MCP Rapid Transit", desc: "Model Context Protocol integration for AI agent tool-access.", complexity: "High" },
+  { quarter: "Q3-25", category: "UX", title: "District Visualization", desc: "Real-time NOC dashboards for the 7 federated domains.", complexity: "Medium" },
+  { quarter: "Q4-25", category: "Connectivity", title: "Zapier/Make Failover", desc: "Secondary and tertiary transit routes established for resilience.", complexity: "Low" }
+];
+
 export const SECTIONS: Record<string, SectionContent> = {
   hero: {
     id: "hero",
-    tagline: "Enterprise Architecture • 2025",
-    title: "AlphaQubit",
-    subtitle: "Complete Platform Stack",
-    description: "A comprehensive, federated architecture optimizing 50+ enterprise-grade platforms for B2B professional services operations."
+    tagline: "Federated Creators • 2025",
+    title: "FlashFusion",
+    subtitle: "Orchestrated Ecosystem",
+    description: "7 domains. 50+ tools. 3 transit hubs. Optimized for 99.9% cost efficiency via strategic RLS and n8n orchestration."
   },
   introduction: {
     id: "introduction",
-    tagline: "Executive Summary",
-    title: "Federated & Best-of-Breed",
-    description_p1: "We have mapped a complete ecosystem of 50+ platforms designed to scale from 50 to 500 employees. The architecture avoids monolithic lock-in by utilizing specialized tools for each department.",
-    description_p2: "This stack bridges the gap between Front-of-House revenue generation and Back-of-House operations, connected via a robust AI and API layer."
+    tagline: "City Infrastructure",
+    title: "Districts & Transit",
+    description_p1: "Just like a modern city, FlashFusion optimizes by routing through transit hubs (n8n, Zapier, MCP) instead of point-to-point chaos.",
+    description_p2: "This 7-district federated architecture replaces 2,500 direct roads with 150 optimized connections, ensuring central visibility and cost predictability."
   },
   infrastructure: {
     id: "infrastructure",
-    tagline: "Core Infrastructure",
-    title: "The 4-Hub Strategy",
-    description: "Rather than one system doing everything poorly, we leverage four specialized Hubs that act as 'Sources of Truth' for their respective domains: CRM, PSA, ERP, and HRIS."
+    tagline: "7-Domain Topology",
+    title: "The Federated Districts",
+    description: "A comprehensive breakdown of the specialized domains that form the FlashFusion creator stack."
   },
   integration: {
     id: "integration",
-    tagline: "Data Flow",
-    title: "Seamless Integration",
-    description: "Data flows automatically from opportunity to project, and project to invoice. Native connectors and iPaaS (Zapier/Workato) eliminate manual data entry between front-office and back-office."
+    tagline: "Transit Hubs",
+    title: "Metro, Bus & Rapid Transit",
+    description: "n8n (Primary), Zapier/Make (Fallback), and MCP (AI-specific) ensure data reaches its destination with zero latency."
   },
   investment: {
     id: "investment",
     tagline: "Financial Efficiency",
-    title: "Strategic Investment",
-    description: "Investing $6k-$13k per employee annually places AlphaQubit squarely within industry benchmarks for high-performance professional services firms."
+    title: "99.9% Optimization",
+    description: "By leveraging RLS for multi-tenant isolation and hub-based orchestration, we eliminate expensive per-seat licensing bloat."
   },
   roadmap: {
     id: "roadmap",
-    tagline: "Implementation",
-    title: "12-Month Roadmap",
-    steps: [
-      { quarter: "Q1", title: "Core Hubs", desc: "Deploy CRM, PSA, ERP, and HRIS. Establish source of truth." },
-      { quarter: "Q2", title: "Revenue & Delivery", desc: "Arm sales and service teams with specialized tools (Outreach, Vanta, Jira)." },
-      { quarter: "Q3", title: "Back-Office Ops", desc: "Automate finance (Bill.com) and HR (Greenhouse) workflows." },
-      { quarter: "Q4", title: "AI & BI Layer", desc: "Deploy Claude Enterprise and Power BI dashboards." }
-    ]
+    tagline: "Implementation Planning",
+    title: "District Expansion Plan",
+    steps: ROADMAP_STEPS
   },
   governance: {
     id: "governance",
     tagline: "Governance",
-    title: "Platform Steering Committee",
-    description: "Ensuring data quality, security, and adoption across the enterprise."
+    title: "The Urban Planning Board",
+    description: "Ensuring the city grows sustainably through coordinated platform management."
   }
 };
 
 export const HUBS_DATA: HubNode[] = [
   { 
-    id: 'CRM', 
-    label: 'CRM & Revenue', 
-    icon: TrendingUp, 
-    color: 'bg-blue-600', 
-    desc: 'Customer Relationship Management. The "Front-of-House" engine managing pipeline, leads, and opportunities (HubSpot/Salesforce).',
-    connections: ['PSA', 'ERP']
+    id: 'DEV', 
+    label: 'Dev District', 
+    icon: Code, 
+    color: 'bg-indigo-600', 
+    desc: 'The building blocks. Next.js 15, TypeScript, tRPC, and Drizzle ORM.',
+    connections: ['DATA', 'OPS'],
+    subPlatforms: [
+      { name: 'Next.js 15', role: 'Frontend Framework' },
+      { name: 'tRPC', role: 'Type-Safe APIs' },
+      { name: 'Drizzle', role: 'ORM layer' },
+      { name: 'Vercel', role: 'Deployment' }
+    ]
   },
   { 
-    id: 'PSA', 
-    label: 'PSA & Delivery', 
-    icon: Briefcase, 
-    color: 'bg-emerald-600', 
-    desc: 'Project Services Automation. The delivery engine tracking utilization, resource planning, and billable hours (Operating.app/Kantata).',
-    connections: ['ERP', 'CRM']
-  },
-  { 
-    id: 'ERP', 
-    label: 'ERP & Finance', 
+    id: 'DATA', 
+    label: 'Data District', 
     icon: Database, 
-    color: 'bg-stone-700', 
-    desc: 'Enterprise Resource Planning. The financial backbone handling GL, AP/AR, and revenue recognition (NetSuite/Sage).',
-    connections: ['BI']
+    color: 'bg-blue-600', 
+    desc: 'Storage & Identity. Supabase PostgreSQL, RLS, and Auth.',
+    connections: ['DEV', 'AI', 'GROWTH'],
+    subPlatforms: [
+      { name: 'Supabase', role: 'PostgreSQL Backend' },
+      { name: 'Postgres RLS', role: 'Security/Isolation' },
+      { name: 'Supabase Auth', role: 'Identity' },
+      { name: 'Walrus', role: 'Object Storage' }
+    ]
   },
   { 
-    id: 'HRIS', 
-    label: 'HRIS & People', 
-    icon: Users, 
-    color: 'bg-purple-600', 
-    desc: 'Human Capital Management. The system of record for employee data, payroll, and org structure (Rippling/BambooHR).',
-    connections: ['ERP', 'PSA']
+    id: 'AI', 
+    label: 'AI Labs', 
+    icon: Cpu, 
+    color: 'bg-emerald-600', 
+    desc: 'GPU Accelerated Intelligence. NVIDIA H100 clusters, Claude 4.5, and MCP Servers.',
+    connections: ['DATA', 'DEV', 'COLLAB'],
+    subPlatforms: [
+      { name: 'H100 Tensor', role: 'Inference Cluster' },
+      { name: 'NVIDIA NIM', role: 'Model Microservices' },
+      { name: 'Claude 4.5', role: 'Primary LLM' },
+      { name: 'MCP', role: 'Tool Protocol' }
+    ]
   },
+  { 
+    id: 'OPS', 
+    label: 'Ops Center', 
+    icon: Settings, 
+    color: 'bg-rose-600', 
+    desc: 'Monitor & Secure. Sentry, PostHog, and Prometheus.',
+    connections: ['DEV', 'DATA'],
+    subPlatforms: [
+      { name: 'Sentry', role: 'Error Tracking' },
+      { name: 'PostHog', role: 'Analytics' },
+      { name: 'Grafana', role: 'NOC Dashboards' },
+      { name: 'Docker', role: 'Runtime' }
+    ]
+  },
+  { 
+    id: 'GROWTH', 
+    label: 'Growth Hub', 
+    icon: TrendingUp, 
+    color: 'bg-amber-600', 
+    desc: 'Revenue & Marketing. HubSpot CRM and Cloudinary.',
+    connections: ['COMMERCE', 'DATA'],
+    subPlatforms: [
+      { name: 'HubSpot', role: 'CRM/Marketing' },
+      { name: 'Cloudinary', role: 'Media DAM' },
+      { name: 'Apollo.io', role: 'Outreach' },
+      { name: 'Intercom', role: 'Support' }
+    ]
+  },
+  { 
+    id: 'COMMERCE', 
+    label: 'Commerce Zone', 
+    icon: ShoppingBag, 
+    color: 'bg-violet-600', 
+    desc: 'Sales & Fulfillment. Stripe and Printify.',
+    connections: ['GROWTH', 'DATA', 'OPS'],
+    subPlatforms: [
+      { name: 'Stripe', role: 'Payment Engine' },
+      { name: 'Printify', role: 'POD Fulfillment' },
+      { name: 'Shopify', role: 'Marketplace Sync' },
+      { name: 'Stripe Tax', role: 'Compliance' }
+    ]
+  },
+  { 
+    id: 'COLLAB', 
+    label: 'Collab Square', 
+    icon: MessageSquare, 
+    color: 'bg-teal-600', 
+    desc: 'Team Coordination. Slack, Notion, and Linear.',
+    connections: ['DEV', 'AI', 'GROWTH'],
+    subPlatforms: [
+      { name: 'Slack', role: 'Primary Messaging' },
+      { name: 'Notion', role: 'Knowledge Base' },
+      { name: 'Linear', role: 'Issue Tracking' },
+      { name: 'Figma', role: 'Design Canvas' }
+    ]
+  }
 ];
 
 export const FLOW_PACKETS: DataFlowPacket[] = [
-  { id: "deal-closed", label: "Deal Closed", desc: "CRM Opportunity → Project Created in PSA" },
-  { id: "milestone", label: "Milestone", desc: "PSA Progress → Revenue Rec in ERP" },
-  { id: "onboarding", label: "Onboarding", desc: "HRIS Hire → IT Provisioning via SSO" }
+  { id: "creator-publish", label: "Creator Publish", desc: "Supabase Event → n8n Metro → Cloudinary + Printify" },
+  { id: "revenue-event", label: "Sale Occurs", desc: "Stripe Webhook → n8n → HubSpot Deal + PostHog" },
+  { id: "ai-tool-call", label: "AI Tool Call", desc: "Claude → MCP Rapid Transit → Database Context" }
 ];
 
 export const COST_TIERS: CostTier[] = [
-  { id: 1, label: "Core Hubs", cost: 200, color: "bg-stone-800 dark:bg-stone-200", desc: "CRM, PSA, ERP, HRIS" },
-  { id: 2, label: "Front-of-House", cost: 120, color: "bg-blue-600", desc: "Sales, Marketing, Delivery Tools" },
-  { id: 3, label: "Back-of-House", cost: 105, color: "bg-emerald-600", desc: "Finance, HR, Legal, IT Ops" },
-  { id: 4, label: "Collaboration", cost: 50, color: "bg-purple-600", desc: "Google/Microsoft, Slack, Zoom" },
-  { id: 5, label: "AI & Auto", cost: 65, color: "bg-nobel-gold", desc: "Claude Enterprise, Gemini, Zapier" },
+  { id: 1, label: "Transit Backbone", cost: 40, color: "bg-fusion-bolt", desc: "n8n, Zapier, Make" },
+  { id: 2, label: "Data District", cost: 25, color: "bg-blue-600", desc: "Supabase Pro (RLS Optimized)" },
+  { id: 3, label: "GPU AI Cluster", cost: 1200, color: "bg-emerald-600", desc: "NVIDIA H100 Reserved Instances" },
+  { id: 4, label: "Commerce Fees", cost: 580, color: "bg-violet-600", desc: "Stripe processing / Printify COGS" },
+  { id: 5, label: "Urban Planning", cost: 69, color: "bg-teal-600", desc: "Slack, Notion, Linear seats" },
 ];
 
 export const GOVERNANCE_ROLES: AuthorProfile[] = [
-  { name: 'CEO', role: 'Executive Sponsor' },
-  { name: 'CFO', role: 'Finance & BI Owner' },
-  { name: 'VP Operations', role: 'PSA & Process Owner' },
-  { name: 'VP Technical Svc', role: 'IT & Security Owner' },
-  { name: 'VP HR', role: 'People Systems Owner' },
-  { name: 'President', role: 'Revenue Systems Owner' }
+  { name: 'City Mayor', role: 'Executive Visionary' },
+  { name: 'Urban Planner', role: 'Architecture Lead' },
+  { name: 'Traffic Controller', role: 'Integration/n8n Lead' },
+  { name: 'Chief Auditor', role: 'Security & RLS Lead' }
 ];

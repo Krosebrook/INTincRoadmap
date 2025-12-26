@@ -1,5 +1,7 @@
 {
-  "name": "AlphaQubit Platform Architecture",
-  "description": "Interactive visualization of the 2025 Enterprise Platform Architecture.",
-  "requestFramePermissions": []
+  "name": "FlashFusion Platform Architecture",
+  "description": "Interactive visualization of the 7-domain federated stack for modern creators.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }
