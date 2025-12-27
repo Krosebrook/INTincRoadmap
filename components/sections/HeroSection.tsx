@@ -50,36 +50,43 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
    * Integrated Animation Controller
    * We apply a spring to the raw scroll progress to smooth out hardware jitters
    * and create a luxurious, inertia-based parallax effect.
+   * Calibrated for a "heavier" and smoother cinematic feel.
    */
   const smoothProgress = useSpring(heroProgress, {
-    stiffness: 80,
-    damping: 25,
+    stiffness: 45,
+    damping: 22,
     restDelta: 0.001
   });
 
   // Sophisticated multi-layered text parallax for maximum spatial depth perception
-  // Values are calibrated to create a feeling of floating layers moving at different physical planes
+  // Values are calibrated to create a pronounced feeling of floating layers moving at different physical planes.
+  // Front-to-back layers are assigned varying speeds and blurs to simulate focal depth.
+  
   const tagline = {
-    y: useTransform(smoothProgress, [0, 1], ["0%", "150%"]),
-    opacity: useTransform(smoothProgress, [0, 0.25], [1, 0])
+    y: useTransform(smoothProgress, [0, 1], ["0%", "320%"]),
+    opacity: useTransform(smoothProgress, [0, 0.2], [1, 0]),
+    rotateX: useTransform(smoothProgress, [0, 1], [0, 15])
   };
   
   const title = {
-    y: useTransform(smoothProgress, [0, 1], ["0%", "100%"]),
-    scale: useTransform(smoothProgress, [0, 0.6], [1, 1.1]),
-    filter: useTransform(smoothProgress, [0, 0.5], ["blur(0px)", "blur(12px)"])
+    y: useTransform(smoothProgress, [0, 1], ["0%", "180%"]),
+    scale: useTransform(smoothProgress, [0, 0.7], [1, 1.25]),
+    opacity: useTransform(smoothProgress, [0, 0.8], [1, 0]),
+    filter: useTransform(smoothProgress, [0, 0.6], ["blur(0px)", "blur(20px)"])
   };
   
   const desc = {
-    y: useTransform(smoothProgress, [0, 1], ["0%", "60%"]),
+    y: useTransform(smoothProgress, [0, 1], ["0%", "100%"]),
     opacity: useTransform(smoothProgress, [0, 0.7], [1, 0]),
-    filter: useTransform(smoothProgress, [0.1, 0.6], ["blur(0px)", "blur(16px)"])
+    scale: useTransform(smoothProgress, [0, 1], [1, 0.9]),
+    filter: useTransform(smoothProgress, [0.1, 0.7], ["blur(0px)", "blur(18px)"])
   };
   
   const cta = {
-    y: useTransform(smoothProgress, [0, 1], ["0%", "30%"]),
-    scale: useTransform(smoothProgress, [0, 0.4], [1, 0.85]),
-    opacity: useTransform(smoothProgress, [0, 0.5], [1, 0])
+    y: useTransform(smoothProgress, [0, 1], ["0%", "50%"]),
+    scale: useTransform(smoothProgress, [0, 0.5], [1, 0.75]),
+    opacity: useTransform(smoothProgress, [0, 0.5], [1, 0]),
+    filter: useTransform(smoothProgress, [0.2, 0.6], ["blur(0px)", "blur(10px)"])
   };
 
   return (
@@ -95,7 +102,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-transparent via-stone-50/10 to-stone-50 dark:via-stone-950/20 dark:to-stone-950" />
       
       {/* Parallax Text Content */}
-      <motion.div style={{ opacity: heroOpacity }} className="relative z-10 container px-6 mx-auto text-center">
+      <motion.div style={{ opacity: heroOpacity }} className="relative z-10 container px-6 mx-auto text-center perspective-1000">
         
         <motion.div style={tagline}>
           <FadeIn direction="none">
