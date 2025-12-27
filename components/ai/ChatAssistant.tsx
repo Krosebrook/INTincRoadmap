@@ -6,7 +6,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, User, Bot, Zap, Cpu, History, Gauge, Send } from 'lucide-react';
+import { MessageSquare, X, User, Bot, Zap, Cpu, History, Gauge, Send, DollarSign } from 'lucide-react';
 import { InferenceOrchestrator } from '../../services/aiService';
 import { useNavigation } from '../../hooks/useNavigation';
 import { useCity } from '../../context/CityContext';
@@ -16,6 +16,7 @@ interface Message {
   role: 'user' | 'model';
   text: string;
   metrics?: InferenceMetrics;
+  cost?: number;
 }
 
 const SUGGESTIONS = [
@@ -88,7 +89,8 @@ export const ChatAssistant: React.FC = () => {
       setMessages(prev => [...prev, { 
         role: 'model', 
         text: response.text,
-        metrics: response.metrics
+        metrics: response.metrics,
+        cost: response.costEstimate
       }]);
     } catch (error) {
       setMessages(prev => [...prev, { 
@@ -158,9 +160,11 @@ export const ChatAssistant: React.FC = () => {
                       {msg.text}
                     </div>
                     {msg.metrics && (
-                      <div className="flex items-center gap-3 px-3 py-1 bg-stone-100 dark:bg-stone-800 rounded-full text-[8px] font-bold text-stone-500 border dark:border-stone-700 uppercase tracking-widest">
+                      <div className="flex flex-wrap items-center gap-3 px-3 py-1 bg-stone-100 dark:bg-stone-800 rounded-full text-[8px] font-bold text-stone-500 border dark:border-stone-700 uppercase tracking-widest">
                         <span className="flex items-center gap-1"><Gauge size={10} /> {msg.metrics.totalLatency}ms</span>
-                        {msg.metrics.accelerated && <span className="text-emerald-500 flex items-center gap-1"><Zap size={10} /> H100 Accelerated</span>}
+                        {msg.cost !== undefined && <span className="flex items-center gap-1"><DollarSign size={10} /> {msg.cost.toFixed(4)}</span>}
+                        {msg.metrics.cached && <span className="text-fusion-bolt flex items-center gap-1"><History size={10} /> Cached</span>}
+                        {msg.metrics.accelerated && !msg.metrics.cached && <span className="text-emerald-500 flex items-center gap-1"><Zap size={10} /> GPU Accelerated</span>}
                       </div>
                     )}
                   </div>

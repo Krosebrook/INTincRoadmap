@@ -31,8 +31,8 @@ interface ErrorBoundaryState {
  * Production-grade Error Boundary.
  * Catches rendering exceptions to prevent total app failure.
  */
-// Fix: Use React.Component specifically to ensure correct type inheritance for props and state methods
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+// Fix: Use the explicitly imported Component class to ensure proper inheritance of props and setState
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   public state: ErrorBoundaryState = {
     hasError: false
   };
@@ -49,6 +49,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   public render(): ReactNode {
+    // Fix: props and state are now correctly typed from the base Component class
     const { fallback, children } = this.props;
     const { hasError } = this.state;
 
@@ -66,6 +67,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             An internal process failure was detected. The district has been isolated for diagnostic review.
           </p>
           <button 
+            // Fix: setState is a valid method on the Component base class
             onClick={() => this.setState({ hasError: false })}
             className="px-8 py-3 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-full font-bold uppercase tracking-widest text-[10px] hover:bg-fusion-bolt transition-all shadow-xl"
           >
