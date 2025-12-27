@@ -11,6 +11,11 @@ const INITIAL_DISTRICTS: HubId[] = ['DEV', 'DATA', 'AI', 'OPS', 'GROWTH', 'COMME
 
 const CityContext = createContext<CityContextType | undefined>(undefined);
 
+/**
+ * CityProvider
+ * Manages the global architectural state and simulation overrides.
+ * Includes a simulated "live feed" to demonstrate NOC dashboard capabilities.
+ */
 export const CityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<CityState>(() => ({
     districts: INITIAL_DISTRICTS.reduce((acc, id) => ({
@@ -18,10 +23,10 @@ export const CityProvider: React.FC<{ children: React.ReactNode }> = ({ children
       [id]: { 
         id, 
         isActive: true, 
-        load: 15 + Math.random() * 20, 
+        load: 10 + Math.random() * 15, 
         health: 100,
         ...(id === 'AI' ? {
-          gpuAcceleration: { isBoosted: false, tflops: 120, vramUsed: 42 }
+          gpuAcceleration: { isBoosted: false, tflops: 120, vramUsed: 38 }
         } : {})
       }
     }), {} as Record<HubId, DistrictStatus>),
@@ -29,43 +34,57 @@ export const CityProvider: React.FC<{ children: React.ReactNode }> = ({ children
     simulationActive: false
   }));
 
-  // Simulating live telemetry flux
+  /**
+   * Hardware Simulation Loop
+   * Updates real-time metrics (load, tflops) to create a dynamic, living UI.
+   */
   useEffect(() => {
     const interval = setInterval(() => {
-      setState(prev => ({
-        ...prev,
-        districts: {
-          ...prev.districts,
-          AI: {
-            ...prev.districts.AI,
-            gpuAcceleration: prev.districts.AI.gpuAcceleration ? {
-              ...prev.districts.AI.gpuAcceleration,
-              tflops: prev.districts.AI.gpuAcceleration.isBoosted 
-                ? 850 + Math.random() * 50 
-                : 120 + Math.random() * 10,
-              vramUsed: prev.districts.AI.gpuAcceleration.isBoosted 
-                ? 78 + Math.random() * 2 
-                : 42 + Math.random() * 3
-            } : undefined
+      setState(prev => {
+        const aiDist = prev.districts.AI;
+        if (!aiDist.isActive) return prev;
+
+        const isBoosted = aiDist.gpuAcceleration?.isBoosted ?? false;
+        
+        return {
+          ...prev,
+          districts: {
+            ...prev.districts,
+            AI: {
+              ...aiDist,
+              gpuAcceleration: aiDist.gpuAcceleration ? {
+                ...aiDist.gpuAcceleration,
+                tflops: isBoosted 
+                  ? 820 + Math.random() * 80 
+                  : 120 + Math.random() * 10,
+                vramUsed: isBoosted 
+                  ? 76 + Math.random() * 4 
+                  : 38 + Math.random() * 5
+              } : undefined
+            }
           }
-        }
-      }));
-    }, 1500);
+        };
+      });
+    }, 2000); // Slower frequency for better performance in heavy SVG scenes
     return () => clearInterval(interval);
   }, []);
 
+  /**
+   * Toggles district connectivity, triggering failover logic in the transit hub.
+   */
   const toggleDistrict = useCallback((id: HubId) => {
     setState(prev => {
-      const newStatus = !prev.districts[id].isActive;
+      const current = prev.districts[id];
+      const newStatus = !current.isActive;
       return {
         ...prev,
         districts: {
           ...prev.districts,
           [id]: { 
-            ...prev.districts[id], 
+            ...current, 
             isActive: newStatus,
             health: newStatus ? 100 : 0,
-            load: newStatus ? 20 : 0
+            load: newStatus ? 15 : 0
           }
         },
         simulationActive: true
@@ -73,20 +92,28 @@ export const CityProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, []);
 
+  /**
+   * Activates H100 Tensor Overclock for AI inference.
+   */
   const toggleGPUBooost = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      districts: {
-        ...prev.districts,
-        AI: {
-          ...prev.districts.AI,
-          gpuAcceleration: prev.districts.AI.gpuAcceleration ? {
-            ...prev.districts.AI.gpuAcceleration,
-            isBoosted: !prev.districts.AI.gpuAcceleration.isBoosted
-          } : undefined
+    setState(prev => {
+      const aiDist = prev.districts.AI;
+      if (!aiDist.gpuAcceleration) return prev;
+
+      return {
+        ...prev,
+        districts: {
+          ...prev.districts,
+          AI: {
+            ...aiDist,
+            gpuAcceleration: {
+              ...aiDist.gpuAcceleration,
+              isBoosted: !aiDist.gpuAcceleration.isBoosted
+            }
+          }
         }
-      }
-    }));
+      };
+    });
   }, []);
 
   const setTransitHub = useCallback((hub: 'n8n' | 'Zapier' | 'Manual') => {
@@ -123,8 +150,13 @@ export const CityProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return <CityContext.Provider value={value}>{children}</CityContext.Provider>;
 };
 
+/**
+ * Hook to access the urban simulation context.
+ */
 export const useCity = () => {
   const context = useContext(CityContext);
-  if (!context) throw new Error('useCity must be used within a CityProvider');
+  if (!context) {
+    throw new Error('useCity must be accessed within a CityProvider to ensure district synchronization.');
+  }
   return context;
 };

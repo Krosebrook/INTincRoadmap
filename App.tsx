@@ -24,27 +24,31 @@ import { CityProvider } from './context/CityContext';
 /**
  * App Component
  * 
- * Central orchestrator for the FlashFusion platform dashboard.
- * Refactored into specialized sections for production-grade modularity.
+ * The central orchestrator for the FlashFusion Architectural Dashboard.
+ * Integrates 3D visualization, federated state management, and AI-driven platform assistance.
  */
 const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
   
-  // Centralized navigation logic
+  // Navigation hook handles scroll-to logic and "scrolled" states
   const { isScrolled, scrollToSection } = useNavigation();
 
-  // Motion orchestration for the Hero Parallax
+  // Primary scroll target for parallax effects
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: heroProgress } = useScroll({ 
     target: heroRef, 
     offset: ["start start", "end start"] 
   });
   
-  const heroY = useTransform(heroProgress, [0, 1], ["0%", "30%"]);
-  const heroOpacity = useTransform(heroProgress, [0, 0.8], [1, 0]);
+  // High-performance transforms mapped to scroll progress
+  const heroY = useTransform(heroProgress, [0, 1], ["0%", "25%"]);
+  const heroOpacity = useTransform(heroProgress, [0, 0.75], [1, 0]);
 
-  // Memoized content retrieval to prevent redundant service calls
+  /** 
+   * Pre-fetched sections to ensure smooth navigation transitions.
+   * Memoized to prevent service re-invocation on theme toggles.
+   */
   const sections = useMemo(() => ({
     hero: ContentService.getSection('hero'),
     intro: ContentService.getSection('introduction'),
@@ -59,7 +63,7 @@ const App: React.FC = () => {
   return (
     <CityProvider>
       <ErrorBoundary>
-        <div className="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 selection:bg-fusion-bolt/30 transition-colors duration-1000 antialiased">
+        <div className="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 selection:bg-fusion-bolt/20 transition-colors duration-1000 antialiased">
           <Navbar 
             scrolled={isScrolled} 
             isDarkMode={isDarkMode} 
@@ -70,7 +74,6 @@ const App: React.FC = () => {
           />
 
           <main role="main">
-            {/* The HeroSection handles the initial 3D immersion and landing titles */}
             <HeroSection 
               heroRef={heroRef}
               heroY={heroY}
@@ -81,7 +84,6 @@ const App: React.FC = () => {
               scrollToSection={scrollToSection}
             />
 
-            {/* MainContent orchestrates all subsequent architectural sections */}
             <MainContent 
               introContent={sections.intro}
               archContent={sections.arch}
@@ -95,7 +97,6 @@ const App: React.FC = () => {
           </main>
           
           <ChatAssistant />
-          
           <Footer />
         </div>
       </ErrorBoundary>
